@@ -13,11 +13,15 @@ jobs:
           cache: gradle
       - name: Change wrapper permissions
         run: chmod +x gradlew
-      - name: Build Debug APK with Fixes
-        run: ./gradlew assembleDebug -Djava.awt.headless=true -Pandroid.injected.signing.store.file="" -Pandroid.injected.signing.store.password="" -Pandroid.injected.signing.key.alias="" -Pandroid.injected.signing.key.password=""
+      - name: Force Universal Debug Key and Headless Environment
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          echo "org.gradle.jvmargs=-Djava.awt.headless=true" >> gradle.properties
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug -Pandroid.injected.signing.store.file="$HOME/.android/debug.keystore" -Pandroid.injected.signing.store.password="android" -Pandroid.injected.signing.key.alias="androiddebugkey" -Pandroid.injected.signing.key.password="android"
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: my-app-apk
           path: app/build/outputs/apk/debug/*.apk
-          

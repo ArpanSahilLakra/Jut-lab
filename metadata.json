@@ -1,0 +1,7 @@
+{
+  "name": "JUT ECE Virtual Lab",
+  "description": "Advanced Electronics and Communication Engineering Virtual Laboratory with circuit simulations, logic gate builder, experiment manuals, quizzes, and Gemini AI assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

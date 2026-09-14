@@ -169,9 +169,9 @@ fun HomeScreen(
             backgroundColor = Color.White,
             onClick = { onNavigate("student_dashboard") }
           ) {
-            Text(text = "STUDENT\nDASHBOARD", fontSize = 12.sp, fontWeight = FontWeight.Black)
+            Text(text = "ANALYTICS\nINSIGHTS", fontSize = 12.sp, fontWeight = FontWeight.Black)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "XP & Streak", fontSize = 10.sp, color = SafeGreen, fontWeight = FontWeight.Bold)
+            Text(text = "AI Progress & XP", fontSize = 10.sp, color = SafeGreen, fontWeight = FontWeight.Bold)
           }
 
           NeoCard(

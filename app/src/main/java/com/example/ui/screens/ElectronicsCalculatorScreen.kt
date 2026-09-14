@@ -64,11 +64,12 @@ fun ElectronicsCalculatorScreen(
         .fillMaxWidth()
         .background(Color.White)
         .padding(8.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp)
+      horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-      TabButton(title = "Resistor Code", selected = selectedTab == 0) { selectedTab = 0 }
+      TabButton(title = "Resistor", selected = selectedTab == 0) { selectedTab = 0 }
       TabButton(title = "Ohm's Law", selected = selectedTab == 1) { selectedTab = 1 }
       TabButton(title = "RC Filter", selected = selectedTab == 2) { selectedTab = 2 }
+      TabButton(title = "V-Divider", selected = selectedTab == 3) { selectedTab = 3 }
     }
 
     // Content
@@ -82,6 +83,7 @@ fun ElectronicsCalculatorScreen(
         0 -> ResistorColorCodeSection()
         1 -> OhmsLawCalculatorSection()
         2 -> RcFilterCalculatorSection()
+        3 -> VoltageDividerSection()
       }
     }
   }
@@ -305,6 +307,61 @@ fun RcFilterCalculatorSection() {
           value = capInput,
           onValueChange = { capInput = it },
           label = { Text("Capacitance C (nF)") },
+          modifier = Modifier.fillMaxWidth()
+        )
+      }
+    }
+  }
+}
+
+@Composable
+fun VoltageDividerSection() {
+  var vinInput by remember { mutableStateOf("5") }
+  var r1Input by remember { mutableStateOf("1000") }
+  var r2Input by remember { mutableStateOf("2000") }
+
+  val vin = vinInput.toDoubleOrNull() ?: 5.0
+  val r1 = r1Input.toDoubleOrNull() ?: 1000.0
+  val r2 = r2Input.toDoubleOrNull() ?: 2000.0
+
+  val vout = if (r1 + r2 > 0) vin * (r2 / (r1 + r2)) else 0.0
+
+  LazyColumn(
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+    modifier = Modifier.fillMaxSize()
+  ) {
+    item {
+      NeoCard(backgroundColor = Color.White) {
+        Text(text = "VOLTAGE DIVIDER", fontSize = 14.sp, fontWeight = FontWeight.Black)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+          text = String.format("Output Voltage (Vout): %.2f V", vout),
+          fontSize = 18.sp,
+          fontWeight = FontWeight.Black,
+          color = TechBlue
+        )
+      }
+    }
+    item {
+      NeoCard(backgroundColor = Color.White) {
+        OutlinedTextField(
+          value = vinInput,
+          onValueChange = { vinInput = it },
+          label = { Text("Input Voltage (Vin)") },
+          modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+          value = r1Input,
+          onValueChange = { r1Input = it },
+          label = { Text("Resistor 1 (R1 in Ω)") },
+          modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedTextField(
+          value = r2Input,
+          onValueChange = { r2Input = it },
+          label = { Text("Resistor 2 (R2 in Ω)") },
           modifier = Modifier.fillMaxWidth()
         )
       }

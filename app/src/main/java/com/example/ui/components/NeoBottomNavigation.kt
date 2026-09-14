@@ -44,12 +44,12 @@ fun NeoBottomNavigation(
         verticalAlignment = Alignment.CenterVertically
     ) {
         NeoNavItem(
-            label = "LABS",
-            isSelected = currentRoute == "home",
-            onClick = { onNavigate("home") }
+            label = "COURSES",
+            isSelected = currentRoute == "home" || currentRoute == "semester_list" || currentRoute == "subject_list" || currentRoute == "subject_detail" || currentRoute == "mock_exam",
+            onClick = { onNavigate("semester_list") }
         )
         NeoNavItem(
-            label = "STATS",
+            label = "ANALYTICS",
             isSelected = currentRoute == "student_dashboard",
             onClick = { onNavigate("student_dashboard") }
         )

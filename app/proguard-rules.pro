@@ -1,26 +1,12 @@
-# Room Database Entities & DAOs Keep Rules
--keep class androidx.room.** { *; }
--keep class * extends androidx.room.RoomDatabase { *; }
--keepclassmembers class * {
-    @androidx.room.* <methods>;
-    @androidx.room.* <fields>;
-}
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
 
-# Kotlin Coroutines Keep Rules
--keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
--keep class kotlinx.coroutines.** { *; }
--keepresources app.jvm.kotlinx_coroutines_core.version
+-dontwarn io.ktor.**
+-keep class io.ktor.** { *; }
 
-# Gemini API Client & Firebase AI Keep Rules
--keep class com.google.firebase.ai.** { *; }
+-dontwarn com.google.ai.client.generativeai.**
 -keep class com.google.ai.client.generativeai.** { *; }
--keepclassmembers class * {
-    @android.webkit.JavascriptInterface <methods>;
-}
 
-# General Serialization & Moshi Keep Rules
--keepattributes *Annotation*,InnerClasses,Signature
--keepclassmembers,allowobfuscation class * {
-    @com.squareup.moshi.* <fields>;
-    @com.squareup.moshi.* <methods>;
-}
+-dontwarn io.github.jan.supabase.**
+-keep class io.github.jan.supabase.** { *; }

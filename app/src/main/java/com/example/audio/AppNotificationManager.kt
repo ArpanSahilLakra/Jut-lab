@@ -42,6 +42,7 @@ class AppNotificationManager(private val context: Context, private val preferenc
         }
     }
 
+    @android.annotation.SuppressLint("MissingPermission")
     suspend fun sendStudyReminder(title: String, message: String) {
         if (!preferences.notificationsEnabled.first()) return
 

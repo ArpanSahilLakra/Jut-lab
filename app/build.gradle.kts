@@ -1,6 +1,7 @@
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.compose)
+  alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.google.devtools.ksp)
   alias(libs.plugins.roborazzi)
   alias(libs.plugins.secrets)
@@ -68,7 +69,10 @@ dependencies {
   implementation(libs.supabase.postgrest)
   implementation(libs.supabase.auth)
     implementation(libs.supabase.realtime)
-  implementation(libs.ktor.client.android)
+  // implementation(libs.ktor.client.android)
+  implementation(libs.ktor.client.okhttp)
+  implementation(libs.ktor.client.core)
+  implementation(libs.kotlinx.serialization.json)
 
   implementation(platform(libs.androidx.compose.bom))
   // implementation(platform(libs.firebase.bom))
@@ -87,13 +91,14 @@ dependencies {
   implementation(libs.androidx.core.ktx)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
   implementation(libs.androidx.datastore.preferences)
+  implementation("androidx.security:security-crypto:1.1.0-alpha06")
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   // implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.room.ktx)
   implementation(libs.androidx.room.runtime)
-  // implementation(libs.coil.compose)
+  implementation(libs.coil.compose)
   // implementation(libs.converter.moshi)
   // implementation(libs.firebase.ai)
   // Uncomment to use Firestore:
@@ -112,6 +117,7 @@ dependencies {
   // implementation(libs.logging.interceptor)
   // implementation(libs.moshi.kotlin)
   implementation(libs.okhttp)
+  
   // implementation(libs.play.services.location)
   // implementation(libs.retrofit)
   testImplementation(libs.androidx.compose.ui.test.junit4)

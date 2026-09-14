@@ -34,6 +34,7 @@ fun LabReportScreen(
   reportRepository: com.example.repository.ReportRepository,
   onBack: () -> Unit
 ) {
+  val context = androidx.compose.ui.platform.LocalContext.current
   val scope = rememberCoroutineScope()
   val reports by labDao.getLabReportsForUser(com.example.repository.AuthRepository().getCurrentUserId() ?: "").collectAsState(initial = emptyList())
   
@@ -110,7 +111,7 @@ fun LabReportScreen(
                 backgroundColor = TechBlue,
                 textColor = Color.White,
                 onClick = {
-                  exportStatus = "Successfully generated and exported all lab reports to PDF format."
+                  exportStatus = com.example.utils.PdfExportManager.generateLabReportPdf(context, reports)
                 }
               )
           }

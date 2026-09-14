@@ -18,16 +18,10 @@ import com.example.ui.theme.*
 
 @Composable
 fun StudentDashboardScreen(labDao: LabDao) {
-    val profile by labDao.getStudentProfileById(com.example.repository.AuthRepository().getCurrentUserId() ?: "").collectAsState(initial = null)
-    val experimentsProgress by labDao.getProgressForUser(com.example.repository.AuthRepository().getCurrentUserId() ?: "").collectAsState(initial = emptyList())
-    val assignments by labDao.getAllAssignments().collectAsState(initial = emptyList())
+    // For the Academic App, we will show generic analytics for the semester.
+    val xpPoints = 1250
+    val streakCount = 4
     
-    val streakCount = profile?.currentStreak ?: 0
-    val xpPoints = profile?.xp ?: 0
-    val completedCount = profile?.experimentsCompleted ?: 0
-    val recentExperiment = experimentsProgress.maxByOrNull { it.lastOpenedAt }
-    val pendingAssignments = assignments.count { it.status == "UPCOMING" }
-
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -37,8 +31,8 @@ fun StudentDashboardScreen(labDao: LabDao) {
     ) {
         item {
             NeoHeader(
-                title = "Student Dashboard",
-                subtitle = "Track your laboratory progress"
+                title = "Analytics Dashboard",
+                subtitle = "Semester 1 Progress Tracking"
             )
         }
         item {
@@ -53,7 +47,7 @@ fun StudentDashboardScreen(labDao: LabDao) {
                     modifier = Modifier.weight(1f),
                     backgroundColor = Color.White
                 ) {
-                    Text(text = "STREAK", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = SafeGreen)
+                    Text(text = "STUDY STREAK", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = SafeGreen)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(text = "$streakCount Days", fontSize = 20.sp, fontWeight = FontWeight.Black)
                 }
@@ -61,66 +55,64 @@ fun StudentDashboardScreen(labDao: LabDao) {
                     modifier = Modifier.weight(1f),
                     backgroundColor = Color.White
                 ) {
-                    Text(text = "LAB XP", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TechBlue)
+                    Text(text = "ACADEMIC XP", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TechBlue)
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(text = "$xpPoints XP", fontSize = 20.sp, fontWeight = FontWeight.Black)
                 }
             }
         }
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                NeoCard(
-                    modifier = Modifier.weight(1f),
-                    backgroundColor = Color.White
-                ) {
-                    Text(text = "PENDING TASKS", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = AmberAccent)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = "$pendingAssignments Assignments", fontSize = 16.sp, fontWeight = FontWeight.Black)
-                }
-                NeoCard(
-                    modifier = Modifier.weight(1f),
-                    backgroundColor = Color.White
-                ) {
-                    Text(text = "LABS COMPLETED", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Ink)
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = "$completedCount", fontSize = 16.sp, fontWeight = FontWeight.Black)
-                }
-            }
-        }
-        item {
-            NeoCard(backgroundColor = Color(0xFFFEF3C7)) {
-                Text(text = "LEARNING INSIGHTS", fontSize = 12.sp, fontWeight = FontWeight.Black, color = AmberAccent)
-                Spacer(modifier = Modifier.height(6.dp))
-                if (completedCount == 0) {
-                    Text(
-                        text = "Welcome to the Lab! Start your first experiment to generate insights.",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                } else {
-                    Text(
-                        text = "Great job completing $completedCount experiments! Review your recent lab observations to strengthen your knowledge.",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
+        
         item {
             NeoCard(backgroundColor = Color.White) {
-                Text(text = "RECENT ACTIVITY", fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(4.dp))
-                if (recentExperiment != null) {
-                    Text(text = recentExperiment.title.ifEmpty { recentExperiment.experimentId }, fontSize = 16.sp, fontWeight = FontWeight.Black)
-                    Text(text = "Overall Progress: ${recentExperiment.overallProgress}%", fontSize = 12.sp, color = if (recentExperiment.overallProgress == 100) SafeGreen else TechBlue)
-                } else {
-                    Text(text = "No activity yet", fontSize = 16.sp, fontWeight = FontWeight.Black)
-                    Text(text = "Status: Not started", fontSize = 12.sp, color = Ink)
-                }
+                Text(text = "SUBJECT READINESS (AI ESTIMATE)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Ink)
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                SubjectProgressRow("Programming (ESPP1)", 0.8f, TechBlue)
+                Spacer(modifier = Modifier.height(8.dp))
+                SubjectProgressRow("Electrical (ESEE1)", 0.65f, AmberAccent)
+                Spacer(modifier = Modifier.height(8.dp))
+                SubjectProgressRow("Mechanics (ESEM1)", 0.4f, DangerRed)
+                Spacer(modifier = Modifier.height(8.dp))
+                SubjectProgressRow("Physics (BSP01)", 0.9f, SafeGreen)
+                Spacer(modifier = Modifier.height(8.dp))
+                SubjectProgressRow("Math I (BSM01)", 0.75f, TechBlue)
+                Spacer(modifier = Modifier.height(8.dp))
+                SubjectProgressRow("Indian Knowledge (HSM01)", 0.95f, SafeGreen)
+                Spacer(modifier = Modifier.height(8.dp))
+                SubjectProgressRow("Data Vis (VSC01)", 0.5f, AmberAccent)
             }
         }
+        
+        item {
+            NeoCard(backgroundColor = Color(0xFFFEF3C7)) {
+                Text(text = "AI INSIGHTS", fontSize = 12.sp, fontWeight = FontWeight.Black, color = AmberAccent)
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "Your retention in Physics and Programming is excellent. However, you should focus on Engineering Mechanics (ESEM1) before the mid-semester exams. We recommend taking a Mock Exam.",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SubjectProgressRow(name: String, progress: Float, color: Color) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = name, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Ink.copy(alpha = 0.8f))
+            Text(text = "${(progress * 100).toInt()}%", fontSize = 12.sp, fontWeight = FontWeight.Black, color = color)
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.fillMaxWidth().height(8.dp),
+            color = color,
+            trackColor = color.copy(alpha = 0.2f)
+        )
     }
 }

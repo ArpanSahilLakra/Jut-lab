@@ -91,7 +91,7 @@ fun DynamicExperimentScreen(
         contentColor = Ink,
         edgePadding = 16.dp,
         indicator = { tabPositions ->
-            TabRowDefaults.Indicator(
+            TabRowDefaults.SecondaryIndicator(
                 Modifier.tabIndicatorOffset(tabPositions[ExpStep.values().indexOf(currentStep)]),
                 color = TechBlue,
                 height = 3.dp
@@ -297,7 +297,7 @@ fun ObservationContent(exp: ExperimentEntity, progress: ExperimentProgressEntity
                     Spacer(modifier = Modifier.height(8.dp))
                     observationList.forEachIndexed { index, reading ->
                         Text(text = "${index + 1}. V = ${reading.first} V, I = ${reading.second} mA", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                        Divider(modifier = Modifier.padding(vertical = 4.dp))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                     }
                 }
             }

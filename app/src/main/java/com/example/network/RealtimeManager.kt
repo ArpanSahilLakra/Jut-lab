@@ -28,7 +28,7 @@ class RealtimeManager(private val labDao: LabDao) {
     fun connectAndSubscribe() {
         scope.launch {
             try {
-                client.realtime.connect()
+                client.realtime?.connect()
                 Log.d("RealtimeManager", "Realtime connected")
                 val profile = labDao.getStudentProfile().firstOrNull()
                 val role = profile?.role
@@ -101,7 +101,7 @@ class RealtimeManager(private val labDao: LabDao) {
         scope.launch {
             studentChannel?.unsubscribe()
             teacherChannel?.unsubscribe()
-            client.realtime.disconnect()
+            client.realtime?.disconnect()
             Log.d("RealtimeManager", "Realtime disconnected")
         }
     }

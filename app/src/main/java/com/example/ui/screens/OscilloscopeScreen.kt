@@ -81,9 +81,13 @@ fun OscilloscopeScreen(
         NeoCard(backgroundColor = Color.Black) {
           Column(modifier = Modifier.fillMaxWidth()) {
             Row(
-              modifier = Modifier.fillMaxWidth(),
+              modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
               horizontalArrangement = Arrangement.SpaceBetween
             ) {
+              Text("CH1", color = SafeGreen, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+              Text("V/DIV: ${amplitude.toInt()}mV", color = SafeGreen, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+              Text("T/DIV: ${String.format(Locale.US, "%.1f", frequency)}ms", color = SafeGreen, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+              Text(if (isRunning) "RUN" else "STOP", color = if (isRunning) SafeGreen else Color.Red, fontSize = 10.sp, fontWeight = FontWeight.Bold)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Box(
@@ -141,22 +145,36 @@ fun OscilloscopeScreen(
                   val x = i * dx
                   val t = (i / points.toFloat()) * (2f * Math.PI.toFloat()) * frequency + time
                   val y = when (waveType) {
-                    0 -> centerY - (sin(t) * amplitude).toFloat()
-                    1 -> centerY - (if (sin(t) >= 0) amplitude else -amplitude).toFloat()
-                    else -> {
+                    0 -> centerY - (sin(t) * amplitude).toFloat() // Sine
+                    1 -> centerY - (if (sin(t) >= 0) amplitude else -amplitude).toFloat() // Square
+                    2 -> { // Triangle
                       val normalized = (t / (2f * Math.PI.toFloat())) % 1f
                       val triangle = if (normalized < 0.5f) (normalized * 4f - 1f) else ((1f - normalized) * 4f - 1f)
                       centerY - (triangle * amplitude).toFloat()
+                    }
+                    3 -> { // Sawtooth
+                      val normalized = (t / (2f * Math.PI.toFloat())) % 1f
+                      centerY - ((normalized * 2f - 1f) * amplitude).toFloat()
+                    }
+                    else -> { // Noise
+                      centerY - ((Math.random().toFloat() * 2f - 1f) * amplitude)
                     }
                   }
 
                   if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
                 }
 
+                // Outer Glow
+                drawPath(
+                  path = path,
+                  color = SafeGreen.copy(alpha = 0.3f),
+                  style = Stroke(width = 8f)
+                )
+                // Inner core
                 drawPath(
                   path = path,
                   color = SafeGreen,
-                  style = Stroke(width = 3f)
+                  style = Stroke(width = 2.5f)
                 )
               }
             }
@@ -171,28 +189,37 @@ fun OscilloscopeScreen(
 
           Text(text = "Waveform Type", fontSize = 12.sp, fontWeight = FontWeight.Bold)
           Spacer(modifier = Modifier.height(6.dp))
+          // First Row of Waveforms
           Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
               onClick = { waveType = 0 },
               colors = ButtonDefaults.buttonColors(containerColor = if (waveType == 0) TechBlue else Color.LightGray),
               modifier = Modifier.weight(1f)
-            ) {
-              Text("Sine", fontSize = 12.sp)
-            }
+            ) { Text("Sine", fontSize = 11.sp, color = if (waveType == 0) Color.White else Ink) }
             Button(
               onClick = { waveType = 1 },
               colors = ButtonDefaults.buttonColors(containerColor = if (waveType == 1) TechBlue else Color.LightGray),
               modifier = Modifier.weight(1f)
-            ) {
-              Text("Square", fontSize = 12.sp)
-            }
+            ) { Text("Square", fontSize = 11.sp, color = if (waveType == 1) Color.White else Ink) }
             Button(
               onClick = { waveType = 2 },
               colors = ButtonDefaults.buttonColors(containerColor = if (waveType == 2) TechBlue else Color.LightGray),
               modifier = Modifier.weight(1f)
-            ) {
-              Text("Triangle", fontSize = 12.sp)
-            }
+            ) { Text("Triangle", fontSize = 11.sp, color = if (waveType == 2) Color.White else Ink) }
+          }
+          Spacer(modifier = Modifier.height(8.dp))
+          // Second Row of Waveforms
+          Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(
+              onClick = { waveType = 3 },
+              colors = ButtonDefaults.buttonColors(containerColor = if (waveType == 3) TechBlue else Color.LightGray),
+              modifier = Modifier.weight(1f)
+            ) { Text("Sawtooth", fontSize = 11.sp, color = if (waveType == 3) Color.White else Ink) }
+            Button(
+              onClick = { waveType = 4 },
+              colors = ButtonDefaults.buttonColors(containerColor = if (waveType == 4) TechBlue else Color.LightGray),
+              modifier = Modifier.weight(1f)
+            ) { Text("Noise", fontSize = 11.sp, color = if (waveType == 4) Color.White else Ink) }
           }
 
           Spacer(modifier = Modifier.height(16.dp))
@@ -200,7 +227,8 @@ fun OscilloscopeScreen(
           Slider(
             value = frequency,
             onValueChange = { frequency = it },
-            valueRange = 0.5f..5f
+            valueRange = 0.1f..10f,
+            colors = SliderDefaults.colors(thumbColor = TechBlue, activeTrackColor = TechBlue)
           )
 
           Spacer(modifier = Modifier.height(12.dp))
@@ -208,8 +236,22 @@ fun OscilloscopeScreen(
           Slider(
             value = amplitude,
             onValueChange = { amplitude = it },
-            valueRange = 20f..90f
+            valueRange = 10f..100f,
+            colors = SliderDefaults.colors(thumbColor = TechBlue, activeTrackColor = TechBlue)
           )
+          Spacer(modifier = Modifier.height(12.dp))
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+          ) {
+            Text(text = "Run / Stop", fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Switch(
+              checked = isRunning,
+              onCheckedChange = { isRunning = it },
+              colors = SwitchDefaults.colors(checkedThumbColor = SafeGreen, checkedTrackColor = SafeGreen.copy(alpha = 0.5f))
+            )
+          }
         }
       }
     }

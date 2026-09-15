@@ -1,1 +1,0 @@
-sed -i 's/postgresChangeFlow<PostgresAction>(schema = "public")/postgresChangeFlow<io.github.jan.supabase.realtime.PostgresAction.Insert>(schema = "public")/' app/src/main/java/com/example/network/RealtimeManager.kt
